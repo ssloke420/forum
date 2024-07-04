@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Chat Forum</title>
     <style>
-      #chat {
-        bottom: 0;
-        width: 100%;
-        left: 0;
-        right: 0;
-        border-radius: 5px;
-      }
-      body {
-        background-color: rgb(250, 250, 250);
-        color: blue;
-      }
+        #chat {
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            right: 0;
+            border-radius: 5px;
+          position: fixed;
+        }
+        body {
+            background-color: rgb(250, 250, 250);
+            color: blue;
+        }
     </style>
+</head>
+<body>
+    <div id="messages"></div>
+    <input id="chat" placeholder="Enter a message..." />
     <script>
+        function addMessage() {
             const chatInput = document.getElementById('chat');
             const chatMessages = document.getElementById('messages');
             const message = chatInput.value.trim();
-      function addMessages(){
+            
             if (message) {
                 const messageElement = document.createElement('p');
                 messageElement.textContent = message;
                 chatMessages.appendChild(messageElement);
                 chatInput.value = '';
+                saveMessages();
             }
-      }
-              function saveMessages() {
-            const chatMessages = document.getElementById('chat-messages');
+        }
+
+        function saveMessages() {
+            const chatMessages = document.getElementById('messages');
             const messages = Array.from(chatMessages.children).map(child => child.textContent);
             localStorage.setItem('chatMessages', JSON.stringify(messages));
         }
 
         function loadMessages() {
-            const chatMessages = document.getElementById('chat-messages');
+            const chatMessages = document.getElementById('messages');
             const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
             chatMessages.innerHTML = '';
             savedMessages.forEach(message => {
@@ -60,14 +68,12 @@
             resetMessages();
             setInterval(resetMessages, 60 * 60 * 1000); // Check every hour
         });
-      chatInput.addEventListener('keydown', function() {
-          addMessages()
-      });
+
+        document.getElementById('chat').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                addMessage();
+            }
+        });
     </script>
-  </head>
-  <body>
-    <div id = "messages">
-    </div>
-    <input id="chat" placeholder = "Enter a message..."/>
-  </body>
+</body>
 </html>
