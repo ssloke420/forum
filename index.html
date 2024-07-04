@@ -19,13 +19,14 @@
             const chatInput = document.getElementById('chat');
             const chatMessages = document.getElementById('messages');
             const message = chatInput.value.trim();
-            
+      function addMessages(){
             if (message) {
                 const messageElement = document.createElement('p');
                 messageElement.textContent = message;
                 chatMessages.appendChild(messageElement);
                 chatInput.value = '';
             }
+      }
               function saveMessages() {
             const chatMessages = document.getElementById('chat-messages');
             const messages = Array.from(chatMessages.children).map(child => child.textContent);
@@ -59,6 +60,9 @@
             resetMessages();
             setInterval(resetMessages, 60 * 60 * 1000); // Check every hour
         });
+      chatInput.addEventListener('keydown', function() {
+          addMessages()
+      });
     </script>
   </head>
   <body>
