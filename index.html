@@ -126,7 +126,7 @@
 
         // Function to check admin permissions
         function checkAdmin(username) {
-            if (username === 'shleky') { // Replace 'your_username' with your actual username
+            if (username === 'shlekydingdong') { // Replace 'admin' with your admin username
                 isAdmin = true;
             } else {
                 isAdmin = false;
@@ -155,6 +155,7 @@
                             addMessage(message, username);
                         }
                     } else {
+                        // Regular users can send messages
                         addMessage(message, username);
                     }
                     document.getElementById('chat').value = '';
