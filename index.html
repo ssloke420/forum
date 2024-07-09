@@ -24,27 +24,69 @@
             color: blue;
             padding-bottom: 60px;
         }
+        #userList {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+        }
+        #typingIndicator {
+            margin-bottom: 10px;
+            color: gray;
+        }
     </style>
 </head>
 <body>
-    <h1> Shlek's Chat Forum</h1>
+    <h1>Shlek's Chat Forum</h1>
     <cite style="font-size: 10px">By using this software, you agree to assume full responsibility of any outcomes of using said software.</cite>
-   	<hr>
-  <div id="messages"></div>
+    <hr>
+    <div id="messages"></div>
+    <div id="typingIndicator"></div>
+    <div id="userList"><strong>Active Users:</strong></div>
     <input id="username" placeholder="Enter your username..." maxlength="20" />
     <input id="chat" placeholder="Enter a message..." maxlength="200" />
     <script>
+        let activeUsers = new Set();
+        let typingTimeout;
+
+        function addUser(username) {
+            activeUsers.add(username);
+            updateUserList();
+        }
+
+        function removeUser(username) {
+            activeUsers.delete(username);
+            updateUserList();
+        }
+
+        function updateUserList() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '<strong>Active Users:</strong><br>' + Array.from(activeUsers).join('<br>');
+        }
+
+        function showTypingIndicator(username) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.textContent = `${username} is typing...`;
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                typingIndicator.textContent = '';
+            }, 3000);
+        }
+
         function addMessage() {
             const chatInput = document.getElementById('chat');
             const usernameInput = document.getElementById('username');
             const chatMessages = document.getElementById('messages');
             const message = chatInput.value.trim();
             const username = usernameInput.value.trim();
-            
+            const timestamp = new Date().toLocaleTimeString();
+
             if (message && username) {
                 if (username.length <= 20 && message.length <= 200) {
                     const messageElement = document.createElement('p');
-                    messageElement.textContent = `${username}: ${message}`;
+                    messageElement.textContent = `[${timestamp}] ${username}: ${message}`;
                     chatMessages.appendChild(messageElement);
                     chatInput.value = '';
                     saveMessages();
@@ -91,6 +133,25 @@
         document.getElementById('chat').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 addMessage();
+            } else {
+                const username = document.getElementById('username').value.trim();
+                if (username) {
+                    showTypingIndicator(username);
+                }
+            }
+        });
+
+        document.getElementById('username').addEventListener('blur', function() {
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                addUser(username);
+            }
+        });
+
+        document.getElementById('username').addEventListener('focus', function() {
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                removeUser(username);
             }
         });
     </script>
