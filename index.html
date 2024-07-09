@@ -22,7 +22,7 @@
         body {
             background-color: rgb(250, 250, 250);
             color: blue;
-            padding-bottom: 60px;
+            padding-bottom: 100px;
         }
         #userList {
             position: fixed;
@@ -50,6 +50,7 @@
     <script>
         let activeUsers = new Set();
         let typingTimeout;
+        let isAdmin = false; // Flag to track admin status
 
         function addUser(username) {
             activeUsers.add(username);
@@ -123,6 +124,15 @@
             }
         }
 
+        // Function to check admin permissions
+        function checkAdmin(username) {
+            if (username === 'backpackbackpackbackpack') { // Replace 'your_username' with your actual username
+                isAdmin = true;
+            } else {
+                isAdmin = false;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadMessages();
             resetMessages();
@@ -134,7 +144,19 @@
                 const message = document.getElementById('chat').value.trim();
                 const username = document.getElementById('username').value.trim();
                 if (message && username) {
-                    addMessage(message, username);
+                    if (isAdmin) {
+                        // Only admins can ban users (example action)
+                        if (message.startsWith('/ban ')) {
+                            const userToBan = message.substring(5).trim();
+                            activeUsers.delete(userToBan);
+                            updateUserList();
+                            addMessage(`User '${userToBan}' has been banned.`, 'Admin');
+                        } else {
+                            addMessage(message, username);
+                        }
+                    } else {
+                        addMessage(message, username);
+                    }
                     document.getElementById('chat').value = '';
                 } else {
                     alert("Please enter both username and message.");
@@ -151,6 +173,7 @@
             const username = document.getElementById('username').value.trim();
             if (username) {
                 addUser(username);
+                checkAdmin(username); // Check admin status when username is set
             }
         });
 
