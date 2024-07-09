@@ -75,30 +75,29 @@
             }, 3000);
         }
 
-        function addMessage() {
-            const chatInput = document.getElementById('chat');
-            const usernameInput = document.getElementById('username');
+        function addMessage(message, username) {
             const chatMessages = document.getElementById('messages');
-            const message = chatInput.value.trim();
-            const username = usernameInput.value.trim();
             const timestamp = new Date().toLocaleTimeString();
-
-            if (message && username) {
-                if (username.length <= 20 && message.length <= 200) {
-                    const messageElement = document.createElement('p');
-                    messageElement.textContent = `[${timestamp}] ${username}: ${message}`;
-                    chatMessages.appendChild(messageElement);
-                    chatInput.value = '';
-                    saveMessages();
-                } else {
-                    alert("Username or message exceeds length limit.");
-                }
+            const messageElement = document.createElement('p');
+            
+            // Check if the message is an image or GIF URL
+            if (isImageURL(message)) {
+                messageElement.innerHTML = `[${timestamp}] ${username}: <br><img src="${message}" style="max-width: 100%; max-height: 200px;" />`;
+            } else {
+                messageElement.textContent = `[${timestamp}] ${username}: ${message}`;
             }
+            
+            chatMessages.appendChild(messageElement);
+            saveMessages();
+        }
+
+        function isImageURL(url) {
+            return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
         }
 
         function saveMessages() {
             const chatMessages = document.getElementById('messages');
-            const messages = Array.from(chatMessages.children).map(child => child.textContent);
+            const messages = Array.from(chatMessages.children).map(child => child.innerHTML);
             localStorage.setItem('chatMessages', JSON.stringify(messages));
         }
 
@@ -108,7 +107,7 @@
             chatMessages.innerHTML = '';
             savedMessages.forEach(message => {
                 const messageElement = document.createElement('p');
-                messageElement.textContent = message;
+                messageElement.innerHTML = message;
                 chatMessages.appendChild(messageElement);
             });
         }
@@ -132,7 +131,14 @@
 
         document.getElementById('chat').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-                addMessage();
+                const message = document.getElementById('chat').value.trim();
+                const username = document.getElementById('username').value.trim();
+                if (message && username) {
+                    addMessage(message, username);
+                    document.getElementById('chat').value = '';
+                } else {
+                    alert("Please enter both username and message.");
+                }
             } else {
                 const username = document.getElementById('username').value.trim();
                 if (username) {
